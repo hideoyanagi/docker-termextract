@@ -11,7 +11,8 @@ RUN yum install -y wget tar vi bzip2
 RUN yum install -y gcc make gcc-c++
 RUN yum install -y perl perl-devel
 #RUN yum install -y nkf
-RUN yum localinstall -y http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm
+#RUN yum localinstall -y http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf-2.0.8b-6.2.el6.x86_64.rpm
+RUN yum localinstall -y http://dl.fedoraproject.org/pub/epel/7/x86_64/n/nkf-2.1.3-5.el7.x86_64.rpm
 
 # for debian
 #RUN apt-get update
@@ -21,35 +22,39 @@ RUN yum localinstall -y http://mirror.centos.org/centos/6/os/x86_64/Packages/nkf
 #RUN apt-get install -y perl libperl-dev
 
 # Mecab
-RUN wget http://mecab.googlecode.com/files/mecab-0.996.tar.gz
+# RUN wget http://mecab.googlecode.com/files/mecab-0.996.tar.gz
+RUN wget -O mecab-0.996.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
 RUN tar -xzf mecab-0.996.tar.gz
 RUN cd mecab-0.996; ./configure --enable-utf8-only; make; make install; ldconfig
 
 # Ipadic
-RUN wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz
+# RUN wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz
+RUN wget -O mecab-ipadic-2.7.0-20070801.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM"
 RUN tar -xzf mecab-ipadic-2.7.0-20070801.tar.gz
 RUN cd mecab-ipadic-2.7.0-20070801; ./configure --with-charset=utf8; make; make install
 RUN echo "dicdir = /usr/local/lib/mecab/dic/ipadic" > /usr/local/etc/mecabrc
 
 # Ipadic_model
-RUN wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.model.bz2
+#RUN wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.model.bz2
+RUN wget -O mecab-ipadic-2.7.0-20070801.model.bz2 "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7bnc5aFZSTE9qNnM"
 RUN bzip2 -d mecab-ipadic-2.7.0-20070801.model.bz2
 #RUN iconv -f EUCJP -t UTF-8 mecab-ipadic-2.7.0-20070801.model -o mecab-ipadic-2.7.0-20070801.model
 RUN nkf --overwrite -Ew mecab-ipadic-2.7.0-20070801.model
 RUN sed -i -e "s/euc-jp/utf-8/g" mecab-ipadic-2.7.0-20070801.model
 
 # Mecab-perl
-RUN wget http://mecab.googlecode.com/files/mecab-perl-0.996.tar.gz
+#RUN wget http://mecab.googlecode.com/files/mecab-perl-0.996.tar.gz
+RUN wget -O mecab-perl-0.996.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7M1pQam5XQjBLcU0"
 RUN tar -xzf mecab-perl-0.996.tar.gz
 RUN cd mecab-perl-0.996 ;perl Makefile.PL; make ;make install;
 RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/mecab.conf
 RUN ldconfig
 
 # TermExtract
-RUN wget http://gensen.dl.itc.u-tokyo.ac.jp/soft/TermExtract-4_10.tar.gz
-RUN tar -xzf TermExtract-4_10.tar.gz
-RUN nkf --overwrite -Ew /TermExtract-4_10/TermExtract/MeCab.pm
-RUN cd TermExtract-4_10 ;perl Makefile.PL; make ;make install;
+RUN wget http://gensen.dl.itc.u-tokyo.ac.jp/soft/TermExtract-4_11.tar.gz
+RUN tar -xzf TermExtract-4_11.tar.gz
+RUN nkf --overwrite -Ew /TermExtract-4_11/TermExtract/MeCab.pm
+RUN cd TermExtract-4_11 ;perl Makefile.PL; make ;make install;
 
 # Add perl script
 ADD termextract_mecab.pl /usr/local/bin/termextract_mecab.pl
@@ -64,5 +69,5 @@ ADD post_filter.txt /var/lib/termextract/post_filter.txt
 RUN rm -rf mecab-0.996.tar.gz*
 RUN rm -rf mecab-ipadic-2.7.0-20070801.tar.gz*
 RUN rm -rf mecab-perl-0.996.tar.gz* 
-RUN rm -rf TermExtract-4_10.tar.gz*
+RUN rm -rf TermExtract-4_11.tar.gz*
 
